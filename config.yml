@@ -1,0 +1,82 @@
+#**********************************
+#BA Comparison Model Control Center
+#**********************************
+
+data:
+  input_file: "nhanes4_model_input.csv"
+  age_col: "age"
+  #imputation options: "median", "mean", "zero", "knn"
+  imputation_method: "median"
+  biomarkers:
+    - albumin
+    - alp
+    - bun
+    - creat
+    - hba1c
+    - lncrp
+    - lymph
+    - mcv
+    - glucose
+    - rdw
+    - totchol
+    - wbc
+    - sbp
+
+output:
+  output_dir: "results"
+
+split:
+  #test_size here
+  test_size: 0.2
+  #random_state, now locked to 42 for reproducibility
+  random_state: 42 
+
+classical_models:
+  kdm:
+    run: true
+    s2_ba_floor: 0.1 
+  pca_dubina:
+    run: true
+
+ml_models:
+  run_ml: true    
+  
+  #set to true to automatically find the best parameters using cross validation
+  grid_search: true
+  cv_folds: 5        #No. of cross validation folds for grid search
+  
+  elastic_net:
+    run: true
+    #only used if grid_search is false
+    l1_ratio: 0.5
+    #only used if grid_search is true
+    param_grid:
+      alpha: [0.1, 0.5, 1.0, 5.0]
+      l1_ratio: [0.1, 0.5, 0.7, 0.9, 1.0]
+    
+  random_forest:
+    run: true
+    #only used if grid_search is false
+    n_estimators: 100  
+    max_depth: null    
+    #only used if grid_search is true
+    param_grid:
+      n_estimators: [50, 100, 200]
+      max_depth: [null, 10, 20]
+    
+  xgboost:
+    run: true
+    #only used if grid_search is false
+    n_estimators: 100  
+    learning_rate: 0.1 
+    max_depth: 6       
+    #only used if grid_search is true
+    param_grid:
+      n_estimators: [50, 100, 200]
+      learning_rate: [0.01, 0.05, 0.1, 0.2]
+      max_depth: [3, 6, 9]
+
+ensemble:
+  run: true
+  #options for ensemble: "mean", "median"
+  method: "median"
