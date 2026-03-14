@@ -1,5 +1,6 @@
-pyyaml
+numpy
+pandas
 scikit-learn
 xgboost
-pandas
 matplotlib
+scipy
